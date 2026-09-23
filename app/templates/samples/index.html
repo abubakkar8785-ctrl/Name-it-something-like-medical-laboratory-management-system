@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block page_title %}Samples{% endblock %}
+{% block content %}
+<div class="card">
+  <table class="data-table">
+    <thead><tr><th>Sample ID</th><th>Order #</th><th>Patient</th><th>Type</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for s in samples %}
+      <tr>
+        <td>{{ s.sample_id }}</td>
+        <td><a href="{{ url_for('lab_orders.view', order_id=s.lab_order.id) }}">{{ s.lab_order.order_number }}</a></td>
+        <td>{{ s.lab_order.patient.full_name }}</td>
+        <td>{{ s.sample_type }}</td>
+        <td><span class="badge badge-default">{{ s.status }}</span></td>
+        <td>
+          {% if s.status == 'Pending Collection' %}
+          <form method="POST" action="{{ url_for('samples.collect', sample_id=s.id) }}" style="display:inline;">
+            <button type="submit" class="btn btn-secondary btn-sm">Mark Collected</button>
+          </form>
+          {% elif s.status == 'Collected' %}
+          <form method="POST" action="{{ url_for('samples.receive', sample_id=s.id) }}" style="display:inline;">
+            <button type="submit" class="btn btn-secondary btn-sm">Receive in Lab</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="muted">No samples.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

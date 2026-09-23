@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block page_title %}Order {{ order.order_number }}{% endblock %}
+{% block topbar_actions %}
+{% if order.status == 'Completed' %}
+<a href="{{ url_for('reports.order_pdf', order_id=order.id) }}" class="btn btn-secondary">Download PDF Report</a>
+{% endif %}
+{% if order.invoice %}
+<a href="{{ url_for('billing.view', invoice_id=order.invoice.id) }}" class="btn btn-secondary">View Invoice</a>
+{% endif %}
+{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="form-grid">
+    <div><strong>Patient:</strong> <a href="{{ url_for('patients.view', patient_id=order.patient.id) }}">{{ order.patient.full_name }}</a></div>
+    <div><strong>Doctor:</strong> {{ order.ordering_doctor.full_name if order.ordering_doctor else '-' }}</div>
+    <div><strong>Order Date:</strong> {{ order.order_date.strftime('%Y-%m-%d %H:%M') }}</div>
+    <div><strong>Priority:</strong> {{ order.priority }}</div>
+    <div><strong>Status:</strong> <span class="badge badge-{{ order.status|replace(' ', '') }}">{{ order.status }}</span></div>
+  </div>
+  {% if order.clinical_notes %}<p><strong>Clinical Notes:</strong> {{ order.clinical_notes }}</p>{% endif %}
+
+  {% if order.status not in ['Completed', 'Cancelled'] %}
+  <form method="POST" action="{{ url_for('lab_orders.update_status', order_id=order.id) }}" style="display:inline-flex; gap:8px; margin-top:10px;">
+    <select name="status">
+      {% for s in ['Pending', 'Sample Collected', 'In Progress', 'Completed'] %}
+      <option value="{{ s }}" {{ 'selected' if order.status == s }}>{{ s }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-secondary btn-sm">Update Status</button>
+  </form>
+  <form method="POST" action="{{ url_for('lab_orders.cancel', order_id=order.id) }}" data-confirm="Cancel this order?" style="display:inline;">
+    <button type="submit" class="btn btn-danger btn-sm">Cancel Order</button>
+  </form>
+  {% endif %}
+</div>
+
+<h3 class="section-title">Tests Ordered</h3>
+<div class="card">
+  <table class="data-table">
+    <thead><tr><th>Test</th><th>Result</th><th>Flag</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for ot in order.tests %}
+      <tr>
+        <td>{{ ot.test.name }}</td>
+        <td>{{ ot.result.value if ot.result else '-' }} {{ ot.result.unit if ot.result else '' }}</td>
+        <td>{{ ot.result.flag if ot.result else '-' }}</td>
+        <td><span class="badge badge-default">{{ ot.status }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<h3 class="section-title">Samples</h3>
+<div class="card">
+  <table class="data-table">
+    <thead><tr><th>Sample ID</th><th>Type</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for s in order.samples %}
+      <tr>
+        <td>{{ s.sample_id }}</td>
+        <td>{{ s.sample_type }}</td>
+        <td><span class="badge badge-default">{{ s.status }}</span></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="3" class="muted">No samples.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

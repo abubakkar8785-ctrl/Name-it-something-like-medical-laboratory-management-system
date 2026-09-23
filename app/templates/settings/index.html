@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block page_title %}Settings{% endblock %}
+{% block content %}
+<div class="stat-grid">
+  <a href="{{ url_for('settings.tests') }}" class="card" style="text-decoration:none; color:inherit;">
+    <h3 class="mt-0">Test Catalog</h3>
+    <p class="muted">Manage the tests your lab offers, pricing, and reference ranges.</p>
+  </a>
+  {% if current_user.is_admin() %}
+  <a href="{{ url_for('settings.users') }}" class="card" style="text-decoration:none; color:inherit;">
+    <h3 class="mt-0">Users</h3>
+    <p class="muted">Manage staff accounts and roles.</p>
+  </a>
+  <a href="{{ url_for('settings.list_backups') }}" class="card" style="text-decoration:none; color:inherit;">
+    <h3 class="mt-0">Backup &amp; Restore</h3>
+    <p class="muted">Create and restore database backups.</p>
+  </a>
+  <a href="{{ url_for('settings.license_page') }}" class="card" style="text-decoration:none; color:inherit;">
+    <h3 class="mt-0">License</h3>
+    <p class="muted">View or activate your software license.</p>
+  </a>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+venv/
+env/
+.venv/
+
+# PyInstaller build output
+build/
+dist/
+
+# Local runtime data (should never be committed — this is what
+# %PROGRAMDATA%\MedicalLaboratoryManagementSystem\ is for at runtime)
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated at dev/test time
+/instance/
+.env
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp

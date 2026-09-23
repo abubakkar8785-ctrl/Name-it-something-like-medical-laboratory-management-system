@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block page_title %}Results Worklist{% endblock %}
+{% block content %}
+<div class="card">
+  <table class="data-table">
+    <thead><tr><th>Order #</th><th>Patient</th><th>Test</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for ot in pending %}
+      <tr>
+        <td>{{ ot.lab_order.order_number }}</td>
+        <td>{{ ot.lab_order.patient.full_name }}</td>
+        <td>{{ ot.test.name }}</td>
+        <td>
+          {% if ot.result and ot.result.status == 'Verified' %}
+          <span class="badge badge-Verified">Verified</span>
+          {% elif ot.result %}
+          <span class="badge badge-InProgress">Entered</span>
+          {% else %}
+          <span class="badge badge-Pending">Pending</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if not ot.result or ot.result.status != 'Verified' %}
+          <a href="{{ url_for('results.entry', order_test_id=ot.id) }}" class="btn btn-secondary btn-sm">
+            {{ 'Edit Result' if ot.result else 'Enter Result' }}
+          </a>
+          {% endif %}
+          {% if ot.result and ot.result.status == 'Entered' %}
+          <form method="POST" action="{{ url_for('results.verify', result_id=ot.result.id) }}" style="display:inline;">
+            <button type="submit" class="btn btn-success btn-sm">Verify</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="muted">No tests awaiting results.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

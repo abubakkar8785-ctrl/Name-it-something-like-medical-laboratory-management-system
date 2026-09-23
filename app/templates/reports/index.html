@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block page_title %}Reports{% endblock %}
+{% block content %}
+<div class="card">
+  <table class="data-table">
+    <thead><tr><th>Order #</th><th>Patient</th><th>Completed</th><th></th></tr></thead>
+    <tbody>
+      {% for o in orders %}
+      <tr>
+        <td>{{ o.order_number }}</td>
+        <td>{{ o.patient.full_name }}</td>
+        <td>{{ o.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td><a href="{{ url_for('reports.order_pdf', order_id=o.id) }}" class="btn btn-secondary btn-sm">Download PDF</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="muted">No completed reports yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

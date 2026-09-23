@@ -1,0 +1,80 @@
+name: Build Windows Desktop App
+
+# Builds MedicalLaboratory.exe and MedicalLaboratorySetup.exe on an
+# actual Windows machine (GitHub's windows-latest runner), since
+# PyInstaller and Inno Setup both produce platform-native output that
+# can't be built on Linux/macOS.
+#
+# Runs automatically on every push to main, and can also be triggered
+# manually from the Actions tab ("Run workflow").
+#
+# Download the results from the run's "Artifacts" section:
+#   - MedicalLaboratory-exe   (the onedir app folder, for quick testing)
+#   - MedicalLaboratorySetup  (the customer-facing installer)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  run-python-tests:
+    # Fast sanity check on Linux before spending Windows-runner minutes.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install runtime dependencies
+        run: pip install -r requirements.txt pytest
+      - name: Run test suite
+        run: pytest tests/ -v
+
+  build-windows:
+    needs: run-python-tests
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build dependencies
+        run: pip install -r requirements-build.txt
+
+      - name: Build MedicalLaboratory.exe with PyInstaller
+        run: pyinstaller medical_lab.spec
+
+      - name: Smoke-test the built exe launches and Flask responds
+        shell: pwsh
+        run: |
+          $proc = Start-Process -FilePath "dist\MedicalLaboratory\MedicalLaboratory.exe" -PassThru
+          Start-Sleep -Seconds 8
+          if ($proc.HasExited) {
+            Write-Error "MedicalLaboratory.exe exited immediately (exit code $($proc.ExitCode))."
+            exit 1
+          }
+          Write-Host "Process is running (PID $($proc.Id)) after 8s — looks healthy."
+          Stop-Process -Id $proc.Id -Force
+
+      - name: Upload built app (onedir)
+        uses: actions/upload-artifact@v4
+        with:
+          name: MedicalLaboratory-exe
+          path: dist/MedicalLaboratory/
+
+      - name: Install Inno Setup
+        run: choco install innosetup -y --no-progress
+
+      - name: Build installer with Inno Setup
+        shell: pwsh
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\medlab_installer.iss
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: MedicalLaboratorySetup
+          path: dist/installer/MedicalLaboratorySetup.exe

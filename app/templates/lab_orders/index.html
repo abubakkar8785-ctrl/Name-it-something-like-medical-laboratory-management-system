@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block page_title %}Lab Orders{% endblock %}
+{% block topbar_actions %}
+<a href="{{ url_for('lab_orders.new') }}" class="btn btn-primary">+ New Order</a>
+{% endblock %}
+{% block content %}
+<div class="card">
+  <table class="data-table">
+    <thead><tr><th>Order #</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Priority</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for o in orders %}
+      <tr>
+        <td><a href="{{ url_for('lab_orders.view', order_id=o.id) }}">{{ o.order_number }}</a></td>
+        <td>{{ o.patient.full_name }}</td>
+        <td>{{ o.ordering_doctor.full_name if o.ordering_doctor else '-' }}</td>
+        <td>{{ o.order_date.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td>{{ o.priority }}</td>
+        <td><span class="badge badge-{{ o.status|replace(' ', '') }}">{{ o.status }}</span></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="muted">No lab orders yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

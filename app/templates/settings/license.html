@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block page_title %}License{% endblock %}
+{% block content %}
+<div class="card">
+  {% if license_info %}
+    <p><strong>Licensed to:</strong> {{ license_info.customer_name }}</p>
+    <p><strong>Valid until:</strong> {{ license_info.expiry }}</p>
+    <p><strong>Activated on:</strong> {{ license_info.activated_at[:19]|replace('T', ' ') }}</p>
+  {% else %}
+    <p class="muted">No license is currently activated on this machine.</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3 class="mt-0">Activate / Update License</h3>
+  <form method="POST">
+    <div class="form-group" style="max-width:480px;">
+      <label>License Key</label>
+      <textarea name="license_key" rows="3" placeholder="Paste your license key here" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Activate</button>
+  </form>
+  <p class="muted" style="margin-top:14px; font-size:12px;">
+    License activation works entirely offline — no internet connection is required.
+  </p>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block page_title %}New Lab Order{% endblock %}
+{% block content %}
+<div class="card">
+  <form method="POST">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Patient *</label>
+        <select name="patient_id" required>
+          <option value="">— Select Patient —</option>
+          {% for p in patients %}
+          <option value="{{ p.id }}">{{ p.full_name }} ({{ p.patient_code }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Ordering Doctor</label>
+        <select name="doctor_id">
+          <option value="">— None —</option>
+          {% for d in doctors %}
+          <option value="{{ d.id }}">{{ d.full_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Priority</label>
+        <select name="priority">
+          <option value="Routine">Routine</option>
+          <option value="Urgent">Urgent</option>
+          <option value="STAT">STAT</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Clinical Notes</label>
+      <textarea name="clinical_notes" rows="2"></textarea>
+    </div>
+
+    <h3 class="section-title">Select Tests *</h3>
+    <div class="card" style="max-height:320px; overflow-y:auto;">
+      <table class="data-table">
+        <thead><tr><th></th><th>Test</th><th>Category</th><th>Sample</th><th>Price</th></tr></thead>
+        <tbody>
+          {% for t in tests %}
+          <tr>
+            <td><input type="checkbox" name="test_ids" value="{{ t.id }}" style="width:auto;"></td>
+            <td>{{ t.name }}</td>
+            <td>{{ t.category or '-' }}</td>
+            <td>{{ t.sample_type or '-' }}</td>
+            <td>{{ "%.2f"|format(t.price) }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="muted">No tests in catalog yet — add some in Settings &rarr; Test Catalog.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Create Order</button>
+      <a href="{{ url_for('lab_orders.index') }}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

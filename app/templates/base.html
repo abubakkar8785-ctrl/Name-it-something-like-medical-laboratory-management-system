@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{% block title %}{{ app_name }}{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+{% if current_user.is_authenticated %}
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="" class="brand-icon">
+      <span>{{ app_name }}</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('dashboard.index') }}" class="{{ 'active' if request.endpoint == 'dashboard.index' }}">
+        <span class="icon">&#9635;</span> Dashboard
+      </a>
+      <a href="{{ url_for('patients.index') }}" class="{{ 'active' if request.blueprint == 'patients' }}">
+        <span class="icon">&#128100;</span> Patients
+      </a>
+      <a href="{{ url_for('doctors.index') }}" class="{{ 'active' if request.blueprint == 'doctors' }}">
+        <span class="icon">&#127973;</span> Doctors
+      </a>
+      <a href="{{ url_for('lab_orders.index') }}" class="{{ 'active' if request.blueprint == 'lab_orders' }}">
+        <span class="icon">&#128203;</span> Lab Orders
+      </a>
+      <a href="{{ url_for('samples.index') }}" class="{{ 'active' if request.blueprint == 'samples' }}">
+        <span class="icon">&#129514;</span> Samples
+      </a>
+      <a href="{{ url_for('results.index') }}" class="{{ 'active' if request.blueprint == 'results' }}">
+        <span class="icon">&#128300;</span> Results
+      </a>
+      <a href="{{ url_for('reports.index') }}" class="{{ 'active' if request.blueprint == 'reports' }}">
+        <span class="icon">&#128196;</span> Reports
+      </a>
+      <a href="{{ url_for('billing.index') }}" class="{{ 'active' if request.blueprint == 'billing' }}">
+        <span class="icon">&#128176;</span> Billing
+      </a>
+      <a href="{{ url_for('inventory.index') }}" class="{{ 'active' if request.blueprint == 'inventory' }}">
+        <span class="icon">&#128230;</span> Inventory
+      </a>
+      <a href="{{ url_for('settings.index') }}" class="{{ 'active' if request.blueprint == 'settings' }}">
+        <span class="icon">&#9881;</span> Settings
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="avatar">{{ current_user.full_name[0] }}</div>
+        <div>
+          <div class="user-name">{{ current_user.full_name }}</div>
+          <div class="user-role">{{ current_user.role|capitalize }}</div>
+        </div>
+      </div>
+      <a href="{{ url_for('auth.logout') }}" class="logout-link">Log out</a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="topbar">
+      <h1>{% block page_title %}{% endblock %}</h1>
+      <div class="topbar-actions">{% block topbar_actions %}{% endblock %}</div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-container">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="content-area">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+</div>
+{% else %}
+  {% block auth_content %}{% endblock %}
+{% endif %}
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

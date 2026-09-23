@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block page_title %}Backup &amp; Restore{% endblock %}
+{% block topbar_actions %}
+<a href="{{ url_for('settings.backup') }}" class="btn btn-primary">Create Backup Now</a>
+{% endblock %}
+{% block content %}
+<div class="card">
+  <table class="data-table">
+    <thead><tr><th>File</th><th>Size (KB)</th><th>Created</th><th></th></tr></thead>
+    <tbody>
+      {% for f in files %}
+      <tr>
+        <td>{{ f.name }}</td>
+        <td>{{ f.size_kb }}</td>
+        <td>{{ f.modified }}</td>
+        <td>
+          <form method="POST" action="{{ url_for('settings.restore', filename=f.name) }}"
+                data-confirm="Restore the database from {{ f.name }}? A safety copy of the current database will be made first, and the app should be restarted afterward.">
+            <button type="submit" class="btn btn-danger btn-sm">Restore</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="muted">No backups yet. Click "Create Backup Now" above.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

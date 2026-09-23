@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block page_title %}Patients{% endblock %}
+{% block topbar_actions %}
+<a href="{{ url_for('patients.new') }}" class="btn btn-primary">+ New Patient</a>
+{% endblock %}
+{% block content %}
+<form class="search-bar" method="get">
+  <input type="text" name="q" value="{{ q }}" placeholder="Search by name, code, or phone...">
+</form>
+
+<div class="card">
+  <table class="data-table">
+    <thead>
+      <tr><th>Code</th><th>Name</th><th>Age/Sex</th><th>Phone</th><th>Registered</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for p in patients %}
+      <tr>
+        <td>{{ p.patient_code }}</td>
+        <td><a href="{{ url_for('patients.view', patient_id=p.id) }}">{{ p.full_name }}</a></td>
+        <td>{{ p.age or '-' }} / {{ p.gender or '-' }}</td>
+        <td>{{ p.phone or '-' }}</td>
+        <td>{{ p.created_at.strftime('%Y-%m-%d') }}</td>
+        <td><a href="{{ url_for('patients.edit', patient_id=p.id) }}" class="btn btn-secondary btn-sm">Edit</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="muted">No patients found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

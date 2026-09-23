@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block page_title %}Doctors{% endblock %}
+{% block topbar_actions %}
+<a href="{{ url_for('doctors.new') }}" class="btn btn-primary">+ New Doctor</a>
+{% endblock %}
+{% block content %}
+<div class="card">
+  <table class="data-table">
+    <thead><tr><th>Code</th><th>Name</th><th>Specialty</th><th>Phone</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for d in doctors %}
+      <tr>
+        <td>{{ d.doctor_code }}</td>
+        <td>{{ d.full_name }}</td>
+        <td>{{ d.specialty or '-' }}</td>
+        <td>{{ d.phone or '-' }}</td>
+        <td>{% if d.active %}<span class="badge badge-Completed">Active</span>{% else %}<span class="badge badge-default">Inactive</span>{% endif %}</td>
+        <td><a href="{{ url_for('doctors.edit', doctor_id=d.id) }}" class="btn btn-secondary btn-sm">Edit</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="muted">No doctors registered.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

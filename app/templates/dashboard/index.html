@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-value">{{ stats.total_patients }}</div>
+    <div class="stat-label">Total Patients</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ stats.pending_orders }}</div>
+    <div class="stat-label">Pending Orders</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ stats.completed_orders }}</div>
+    <div class="stat-label">Completed Orders</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ stats.pending_samples }}</div>
+    <div class="stat-label">Samples Awaiting</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ stats.unpaid_invoices }}</div>
+    <div class="stat-label">Unpaid Invoices</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ stats.low_stock_items }}</div>
+    <div class="stat-label">Low Stock Items</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ "%.2f"|format(stats.revenue_total) }}</div>
+    <div class="stat-label">Revenue Collected</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2 class="mt-0">Recent Orders</h2>
+  <table class="data-table">
+    <thead>
+      <tr><th>Order #</th><th>Patient</th><th>Date</th><th>Priority</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      {% for o in recent_orders %}
+      <tr>
+        <td><a href="{{ url_for('lab_orders.view', order_id=o.id) }}">{{ o.order_number }}</a></td>
+        <td>{{ o.patient.full_name }}</td>
+        <td>{{ o.order_date.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td>{{ o.priority }}</td>
+        <td><span class="badge badge-{{ o.status|replace(' ', '') }}">{{ o.status }}</span></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="muted">No orders yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block page_title %}Test Catalog{% endblock %}
+{% block topbar_actions %}
+<a href="{{ url_for('settings.new_test') }}" class="btn btn-primary">+ New Test</a>
+{% endblock %}
+{% block content %}
+<div class="card">
+  <table class="data-table">
+    <thead><tr><th>Code</th><th>Name</th><th>Category</th><th>Sample</th><th>Price</th><th>TAT (hrs)</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for t in catalog %}
+      <tr>
+        <td>{{ t.test_code }}</td>
+        <td>{{ t.name }}</td>
+        <td>{{ t.category or '-' }}</td>
+        <td>{{ t.sample_type or '-' }}</td>
+        <td>{{ "%.2f"|format(t.price) }}</td>
+        <td>{{ t.turnaround_hours }}</td>
+        <td>
+          {% if t.active %}<span class="badge badge-Completed">Active</span>
+          {% else %}<span class="badge badge-default">Inactive</span>{% endif %}
+        </td>
+        <td><a href="{{ url_for('settings.edit_test', test_id=t.id) }}" class="btn btn-secondary btn-sm">Edit</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8" class="muted">No tests in catalog yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

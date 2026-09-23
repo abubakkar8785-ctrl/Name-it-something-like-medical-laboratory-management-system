@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block page_title %}Enter Result — {{ order_test.test.name }}{% endblock %}
+{% block content %}
+<div class="card">
+  <p><strong>Patient:</strong> {{ order_test.lab_order.patient.full_name }} &nbsp;
+     <strong>Order:</strong> {{ order_test.lab_order.order_number }}</p>
+  <form method="POST">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Value *</label>
+        <input type="text" name="value" required value="{{ result.value or '' }}">
+      </div>
+      <div class="form-group">
+        <label>Unit</label>
+        <input type="text" name="unit" value="{{ result.unit or order_test.test.unit or '' }}">
+      </div>
+      <div class="form-group">
+        <label>Reference Range</label>
+        <input type="text" name="reference_range" value="{{ result.reference_range or order_test.test.reference_range or '' }}">
+      </div>
+      <div class="form-group">
+        <label>Flag</label>
+        <select name="flag">
+          {% for f in ['Normal', 'High', 'Low', 'Critical'] %}
+          <option value="{{ f }}" {{ 'selected' if result.flag == f }}>{{ f }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Notes</label>
+      <textarea name="notes" rows="2">{{ result.notes or '' }}</textarea>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Save Result</button>
+      <a href="{{ url_for('results.index') }}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
