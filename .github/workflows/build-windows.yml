@@ -26,9 +26,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Install runtime dependencies
+            - name: Install runtime dependencies
         run: pip install -r requirements.txt pytest
-      - name: Run test suite
+
+      - name: Run Python tests
+        env:
+          PYTHONPATH: .
         run: pytest tests/ -v
 
   build-windows:
